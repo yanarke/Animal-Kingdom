@@ -1,4 +1,5 @@
--- ANIMAL KINGDOM HUB BY XVMOD (FULL HUB)
+--========================================================
+-- CLEAN GUI XVMOD (AVEC BOUTONS FONCTIONNELS)
 --========================================================
 
 local Players = game:GetService("Players")
@@ -11,15 +12,11 @@ local Humanoid = Character:WaitForChild("Humanoid")
 local HRP = Character:WaitForChild("HumanoidRootPart")
 
 --========================================================
--- SCREEN GUI
+-- GUI
 --========================================================
 
 local GUI = Instance.new("ScreenGui", game.CoreGui)
-GUI.Name = "XVMOD_HUB"
-
---========================================================
--- MAIN FRAME
---========================================================
+GUI.Name = "Clean_GUI"
 
 local Main = Instance.new("Frame", GUI)
 Main.Size = UDim2.new(0, 500, 0, 320)
@@ -32,21 +29,21 @@ Main.BackgroundTransparency = 1
 Instance.new("UICorner", Main).CornerRadius = UDim.new(0,10)
 
 --========================================================
--- OPEN BUTTON (DRAGGABLE)
+-- OPEN BUTTON
 --========================================================
 
 local Open = Instance.new("TextButton", GUI)
 Open.Size = UDim2.new(0,45,0,45)
 Open.Position = UDim2.new(0,20,0.5,0)
 Open.AnchorPoint = Vector2.new(0,0.5)
-Open.Text = "GUI"
+Open.Text = "LOS"
 Open.Font = Enum.Font.GothamBold
 Open.TextSize = 14
 Open.TextColor3 = Color3.new(1,1,1)
 Open.BackgroundColor3 = Color3.fromRGB(35,35,35)
 Instance.new("UICorner", Open).CornerRadius = UDim.new(0,6)
 
--- drag open button
+-- DRAG
 local dragging, dragInput, dragStart, startPos
 
 Open.InputBegan:Connect(function(input)
@@ -72,12 +69,17 @@ end)
 UIS.InputChanged:Connect(function(input)
     if dragging and input == dragInput then
         local delta = input.Position - dragStart
-        Open.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        Open.Position = UDim2.new(
+            startPos.X.Scale,
+            startPos.X.Offset + delta.X,
+            startPos.Y.Scale,
+            startPos.Y.Offset + delta.Y
+        )
     end
 end)
 
 --========================================================
--- ANIMATION OPEN/CLOSE
+-- OPEN / CLOSE ANIMATION
 --========================================================
 
 local opened = false
@@ -116,7 +118,7 @@ end)
 local Title = Instance.new("TextLabel", Main)
 Title.Size = UDim2.new(1,0,0,30)
 Title.BackgroundTransparency = 1
-Title.Text = "Animal Kingdom Script By XVMOD"
+Title.Text = "Animal Kingdom — XVMOD Hub"
 Title.TextColor3 = Color3.fromRGB(255,255,255)
 Title.Font = Enum.Font.GothamBold
 Title.TextSize = 14
@@ -166,76 +168,50 @@ local CredPage = AutoPage:Clone()
 CredPage.Parent = Main
 CredPage.Visible = false
 
--- clear clones
 for _,v in pairs(MiscPage:GetChildren()) do v:Destroy() end
 for _,v in pairs(CredPage:GetChildren()) do v:Destroy() end
 
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
+--========================================================
+-- TAB SWITCH
+--========================================================
 
-local function reconnectButtons()
-    -- Ici tu remets TOUTES les connexions de tes boutons
-    -- Exemple :
-    AutoBtn.MouseButton1Click:Connect(function()
-        autoChest = not autoChest
-        AutoBtn.Text = autoChest and "Auto Chest : ON" or "Auto Chest : OFF"
-        AutoBtn.BackgroundColor3 = autoChest and Color3.fromRGB(0,170,0) or Color3.fromRGB(50,50,50)
-    end)
-
-    -- Si tu as d'autres boutons, tu les reconnectes ici
+local function show(p)
+    AutoPage.Visible = false
+    MiscPage.Visible = false
+    CredPage.Visible = false
+    p.Visible = true
 end
 
--- 🔄 Quand tu respawn → on reconnecte les boutons
-LocalPlayer.CharacterAdded:Connect(function()
-    task.wait(0.5)
-    reconnectButtons()
-end)
-
--- Première connexion au lancement
-reconnectButtons()
-
+AutoTab.MouseButton1Click:Connect(function() show(AutoPage) end)
+MiscTab.MouseButton1Click:Connect(function() show(MiscPage) end)
+CredTab.MouseButton1Click:Connect(function() show(CredPage) end)
 
 --========================================================
 -- AUTO CHEST
 --========================================================
 
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-
-local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-local HRP = Character:WaitForChild("HumanoidRootPart")
-
 local chestFolder = workspace:WaitForChild("Chests")
 local autoChest = false
 
--- UI BUTTON
-local AutoBtn = Instance.new("TextButton", AutoPage)
-AutoBtn.Size = UDim2.new(0,200,0,40)
-AutoBtn.Position = UDim2.new(0,20,0,20)
-AutoBtn.Text = "Auto Chest : OFF"
-AutoBtn.BackgroundColor3 = Color3.fromRGB(50,50,50)
-AutoBtn.TextColor3 = Color3.new(1,1,1)
-Instance.new("UICorner", AutoBtn).CornerRadius = UDim.new(0,6)
+local AutoChestBtn = Instance.new("TextButton", AutoPage)
+AutoChestBtn.Size = UDim2.new(0,200,0,40)
+AutoChestBtn.Position = UDim2.new(0,20,0,20)
+AutoChestBtn.Text = "Auto Chest : OFF"
+AutoChestBtn.BackgroundColor3 = Color3.fromRGB(50,50,50)
+AutoChestBtn.TextColor3 = Color3.new(1,1,1)
+Instance.new("UICorner", AutoChestBtn).CornerRadius = UDim.new(0,6)
 
--- 🔄 REFRESH CHARACTER AUTOMATIQUE APRÈS LA MORT
 local function refreshChar()
-    Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+    Character = LP.Character or LP.CharacterAdded:Wait()
     HRP = Character:WaitForChild("HumanoidRootPart")
+    Humanoid = Character:WaitForChild("Humanoid")
 end
 
-LocalPlayer.CharacterAdded:Connect(function()
+LP.CharacterAdded:Connect(function()
     task.wait(1)
     refreshChar()
 end)
 
--- 🔥 FireTouchInterest
-local function fireTouch(p)
-    firetouchinterest(HRP, p, 0)
-    task.wait()
-    firetouchinterest(HRP, p, 1)
-end
-
--- ♻️ AUTO CHEST LOOP (NE S'ARRÊTE JAMAIS)
 task.spawn(function()
     while true do
         if autoChest and HRP then
@@ -251,16 +227,14 @@ task.spawn(function()
     end
 end)
 
--- BOUTON
-AutoBtn.MouseButton1Click:Connect(function()
+AutoChestBtn.MouseButton1Click:Connect(function()
     autoChest = not autoChest
-    AutoBtn.Text = autoChest and "Auto Chest : ON" or "Auto Chest : OFF"
-    AutoBtn.BackgroundColor3 = autoChest and Color3.fromRGB(0,170,0) or Color3.fromRGB(50,50,50)
+    AutoChestBtn.Text = autoChest and "Auto Chest : ON" or "Auto Chest : OFF"
+    AutoChestBtn.BackgroundColor3 = autoChest and Color3.fromRGB(0,170,0) or Color3.fromRGB(50,50,50)
 end)
 
-
 --========================================================
--- AUTO DUMMY (TP BEHIND NPC)
+-- AUTO DUMMY
 --========================================================
 
 local autoDummy = false
@@ -272,17 +246,6 @@ AutoDummyBtn.Text = "Auto Dummy : OFF (need auto hit)"
 AutoDummyBtn.BackgroundColor3 = Color3.fromRGB(50,50,50)
 AutoDummyBtn.TextColor3 = Color3.new(1,1,1)
 Instance.new("UICorner", AutoDummyBtn).CornerRadius = UDim.new(0,6)
-
-local function refreshChar()
-    local c = LP.Character or LP.CharacterAdded:Wait()
-    HRP = c:WaitForChild("HumanoidRootPart")
-    Humanoid = c:WaitForChild("Humanoid")
-end
-
-LP.CharacterAdded:Connect(function()
-    task.wait(1)
-    refreshChar()
-end)
 
 local function getNextEnemy()
     local folder = workspace:FindFirstChild("Enemys")
@@ -302,15 +265,12 @@ task.spawn(function()
         if autoDummy and HRP then
             local enemy, hum, hrpE = getNextEnemy()
             if enemy then
-                -- hitbox 40
                 hrpE.Size = Vector3.new(40,40,40)
                 hrpE.CanCollide = false
 
-                -- TP derrière le NPC
                 local behind = hrpE.CFrame * CFrame.new(0,0,6)
                 HRP.CFrame = CFrame.new(behind.Position, hrpE.Position)
 
-                -- attendre la mort
                 if hum.Health <= 0 then
                     task.wait(0.1)
                 end
@@ -326,10 +286,11 @@ AutoDummyBtn.MouseButton1Click:Connect(function()
     AutoDummyBtn.BackgroundColor3 = autoDummy and Color3.fromRGB(0,170,0) or Color3.fromRGB(50,50,50)
 end)
 
+--========================================================
+-- MISC : SPEED
+--========================================================
 
---========================================================
--- MISC : SPEED + HITBOX
---========================================================
+local speedOn = false
 
 local SpeedBtn = Instance.new("TextButton", MiscPage)
 SpeedBtn.Size = UDim2.new(0,200,0,40)
@@ -339,14 +300,18 @@ SpeedBtn.BackgroundColor3 = Color3.fromRGB(50,50,50)
 SpeedBtn.TextColor3 = Color3.new(1,1,1)
 Instance.new("UICorner", SpeedBtn).CornerRadius = UDim.new(0,6)
 
-local speedOn = false
-
 SpeedBtn.MouseButton1Click:Connect(function()
     speedOn = not speedOn
     Humanoid.WalkSpeed = speedOn and 80 or 16
     SpeedBtn.Text = speedOn and "Speed ON" or "Speed OFF"
     SpeedBtn.BackgroundColor3 = speedOn and Color3.fromRGB(0,170,255) or Color3.fromRGB(50,50,50)
 end)
+
+--========================================================
+-- MISC : HITBOX
+--========================================================
+
+local hitOn = false
 
 local HitBtn = Instance.new("TextButton", MiscPage)
 HitBtn.Size = UDim2.new(0,200,0,40)
@@ -355,8 +320,6 @@ HitBtn.Text = "Hitbox : OFF"
 HitBtn.BackgroundColor3 = Color3.fromRGB(50,50,50)
 HitBtn.TextColor3 = Color3.new(1,1,1)
 Instance.new("UICorner", HitBtn).CornerRadius = UDim.new(0,6)
-
-local hitOn = false
 
 HitBtn.MouseButton1Click:Connect(function()
     hitOn = not hitOn
