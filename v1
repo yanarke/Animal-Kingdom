@@ -199,7 +199,7 @@ task.spawn(function()
                 if part then
                     Character:PivotTo(part.CFrame + Vector3.new(1,0,0))
                     task.wait(0.05)
-                    fireTouch(part)
+                
                 end
             end
         end
@@ -212,6 +212,74 @@ AutoBtn.MouseButton1Click:Connect(function()
     AutoBtn.Text = autoChest and "Auto Chest : ON" or "Auto Chest : OFF"
     AutoBtn.BackgroundColor3 = autoChest and Color3.fromRGB(0,170,0) or Color3.fromRGB(50,50,50)
 end)
+
+--========================================================
+-- AUTO DUMMY (TP BEHIND NPC)
+--========================================================
+
+local autoDummy = false
+
+local AutoDummyBtn = Instance.new("TextButton", AutoPage)
+AutoDummyBtn.Size = UDim2.new(0,200,0,40)
+AutoDummyBtn.Position = UDim2.new(0,20,0,70)
+AutoDummyBtn.Text = "Auto Dummy : OFF (need auto hit)"
+AutoDummyBtn.BackgroundColor3 = Color3.fromRGB(50,50,50)
+AutoDummyBtn.TextColor3 = Color3.new(1,1,1)
+Instance.new("UICorner", AutoDummyBtn).CornerRadius = UDim.new(0,6)
+
+local function refreshChar()
+    local c = LP.Character or LP.CharacterAdded:Wait()
+    HRP = c:WaitForChild("HumanoidRootPart")
+    Humanoid = c:WaitForChild("Humanoid")
+end
+
+LP.CharacterAdded:Connect(function()
+    task.wait(1)
+    refreshChar()
+end)
+
+local function getNextEnemy()
+    local folder = workspace:FindFirstChild("Enemys")
+    if not folder then return end
+
+    for _, enemy in ipairs(folder:GetChildren()) do
+        local hum = enemy:FindFirstChild("Humanoid")
+        local hrpE = enemy:FindFirstChild("HumanoidRootPart")
+        if hum and hum.Health > 0 and hrpE then
+            return enemy, hum, hrpE
+        end
+    end
+end
+
+task.spawn(function()
+    while true do
+        if autoDummy and HRP then
+            local enemy, hum, hrpE = getNextEnemy()
+            if enemy then
+                -- hitbox 40
+                hrpE.Size = Vector3.new(40,40,40)
+                hrpE.CanCollide = false
+
+                -- TP derrière le NPC
+                local behind = hrpE.CFrame * CFrame.new(0,0,6)
+                HRP.CFrame = CFrame.new(behind.Position, hrpE.Position)
+
+                -- attendre la mort
+                if hum.Health <= 0 then
+                    task.wait(0.1)
+                end
+            end
+        end
+        task.wait(0.05)
+    end
+end)
+
+AutoDummyBtn.MouseButton1Click:Connect(function()
+    autoDummy = not autoDummy
+    AutoDummyBtn.Text = autoDummy and "Auto Dummy : ON (need auto hit)" or "Auto Dummy : OFF (need auto hit)"
+    AutoDummyBtn.BackgroundColor3 = autoDummy and Color3.fromRGB(0,170,0) or Color3.fromRGB(50,50,50)
+end)
+
 
 --========================================================
 -- MISC : SPEED + HITBOX
