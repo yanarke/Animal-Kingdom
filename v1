@@ -286,10 +286,29 @@ end)
 task.spawn(function()
 	while task.wait(0.1) do
 		if autoK then
+
+			-- =========================
+			-- CLICK COORDONNÉE
+			-- =========================
 			local x, y = 652, 24
 
 			VIM:SendMouseButtonEvent(x, y, 0, true, game, 0)
 			VIM:SendMouseButtonEvent(x, y, 0, false, game, 0)
+
+			-- =========================
+			-- FORCE TOOL 1 EQUIP
+			-- =========================
+			local char = game.Players.LocalPlayer.Character
+			local backpack = game.Players.LocalPlayer:FindFirstChild("Backpack")
+
+			if char and backpack then
+				local tools = backpack:GetChildren()
+
+				if tools[1] and tools[1]:IsA("Tool") then
+					char.Humanoid:EquipTool(tools[1])
+				end
+			end
+
 		end
 	end
 end)
