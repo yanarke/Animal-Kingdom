@@ -232,7 +232,67 @@ AutoChestBtn.MouseButton1Click:Connect(function()
     AutoChestBtn.Text = autoChest and "Auto Chest : ON" or "Auto Chest : OFF"
     AutoChestBtn.BackgroundColor3 = autoChest and Color3.fromRGB(0,170,0) or Color3.fromRGB(50,50,50)
 end)
+--========================================================
+-- VARIABLES (IMPORTANT)
+--========================================================
 
+local UIS = game:GetService("UserInputService")
+local VIM = game:GetService("VirtualInputManager")
+
+local autoK = false
+
+--========================================================
+-- BUTTON AUTO K
+--========================================================
+
+local AutoKBtn = Instance.new("TextButton")
+AutoKBtn.Size = UDim2.new(0,200,0,40)
+AutoKBtn.Position = UDim2.new(0,20,0,120)
+AutoKBtn.Text = "Auto K Toggle : OFF (K toggle)"
+AutoKBtn.BackgroundColor3 = Color3.fromRGB(50,50,50)
+AutoKBtn.TextColor3 = Color3.new(1,1,1)
+AutoKBtn.Font = Enum.Font.GothamBold
+AutoKBtn.TextSize = 14
+AutoKBtn.BorderSizePixel = 0
+AutoKBtn.Parent = AutoPage
+
+Instance.new("UICorner", AutoKBtn).CornerRadius = UDim.new(0,6)
+
+--========================================================
+-- K TOGGLE (SAFE FIX)
+--========================================================
+
+UIS.InputBegan:Connect(function(input, gp)
+	if gp then return end
+	if input.UserInputType ~= Enum.UserInputType.Keyboard then return end
+
+	if input.KeyCode == Enum.KeyCode.K then
+		autoK = not autoK
+
+		if autoK then
+			AutoKBtn.Text = "Auto K Toggle : ON (K toggle)"
+			AutoKBtn.BackgroundColor3 = Color3.fromRGB(0,170,0)
+		else
+			AutoKBtn.Text = "Auto K Toggle : OFF (K toggle)"
+			AutoKBtn.BackgroundColor3 = Color3.fromRGB(50,50,50)
+		end
+	end
+end)
+
+--========================================================
+-- LOOP (REAL CLICK FIX)
+--========================================================
+
+task.spawn(function()
+	while task.wait(0.1) do
+		if autoK then
+			local x, y = 652, 24
+
+			VIM:SendMouseButtonEvent(x, y, 0, true, game, 0)
+			VIM:SendMouseButtonEvent(x, y, 0, false, game, 0)
+		end
+	end
+end)
 --========================================================
 -- AUTO DUMMY
 --========================================================
