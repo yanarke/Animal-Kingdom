@@ -170,6 +170,31 @@ CredPage.Visible = false
 for _,v in pairs(MiscPage:GetChildren()) do v:Destroy() end
 for _,v in pairs(CredPage:GetChildren()) do v:Destroy() end
 
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+local function reconnectButtons()
+    -- Ici tu remets TOUTES les connexions de tes boutons
+    -- Exemple :
+    AutoBtn.MouseButton1Click:Connect(function()
+        autoChest = not autoChest
+        AutoBtn.Text = autoChest and "Auto Chest : ON" or "Auto Chest : OFF"
+        AutoBtn.BackgroundColor3 = autoChest and Color3.fromRGB(0,170,0) or Color3.fromRGB(50,50,50)
+    end)
+
+    -- Si tu as d'autres boutons, tu les reconnectes ici
+end
+
+-- 🔄 Quand tu respawn → on reconnecte les boutons
+LocalPlayer.CharacterAdded:Connect(function()
+    task.wait(0.5)
+    reconnectButtons()
+end)
+
+-- Première connexion au lancement
+reconnectButtons()
+
+
 --========================================================
 -- AUTO CHEST
 --========================================================
